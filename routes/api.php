@@ -20,3 +20,18 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 
 
 Route::apiResource('schedule', ScheduleController::class);
+
+Route::get('/is-open-now', [
+    'uses' => 'API\ShopTimingController@isOpenNow',
+    'as' => 'isOpenNow'
+]);
+
+Route::get('/is-open-on/{date}', [
+    'uses' => 'API\ShopTimingController@isOpenOn',
+    'as' => 'isOpenOn'
+]);
+
+Route::get('/nearest-open-date', [
+    'uses' => 'API\ShopTimingController@nearestOpenDate',
+    'as' => 'nearestOpenDate'
+]);
