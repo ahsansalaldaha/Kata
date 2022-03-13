@@ -16,8 +16,8 @@ return new class extends Migration
         Schema::create('schedules', function (Blueprint $table) {
             $table->id();
             $table->enum("day", ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday']);
-            $table->time("start_time");
-            $table->time("end_time");
+            $table->timeTz("start");
+            $table->timeTz("end");
             $table->timestamps();
         });
     }

@@ -15,8 +15,8 @@ return new class extends Migration
     {
         Schema::create('exclusive_breaks', function (Blueprint $table) {
             $table->id();
-            $table->time('start');
-            $table->time('end');
+            $table->timeTz('start');
+            $table->timeTz('end');
             $table->bigInteger('schedule_id')->unsigned()->nullable();
             $table->foreign('schedule_id')->references('id')->on('schedules')->onDelete('cascade');
             $table->timestamps();

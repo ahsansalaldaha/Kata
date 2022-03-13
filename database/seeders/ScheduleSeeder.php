@@ -5,6 +5,9 @@ namespace Database\Seeders;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 use App\Models\Schedule;
+use App\Models\Repeat;
+use Exception;
+use Illuminate\Support\Carbon;
 
 class ScheduleSeeder extends Seeder
 {
@@ -15,10 +18,24 @@ class ScheduleSeeder extends Seeder
      */
     public function run()
     {
-        Schedule::create([
-            'day' => 'Monday',
-            'start_time' => '10:00',
-            'end_time' => '07:00',
-        ]);
+        $repeat = Repeat::every(1)->week()->first(['id']);
+        $alternative_repeat = Repeat::every(2)->week()->first(['id']);
+        if (!$repeat || !$alternative_repeat) {
+            throw new Exception("Repeat Seeder needs to run", 422);
+        }
+
+        foreach (['Monday', 'Wednesday', 'Friday', 'Saturday'] as $day) {
+            $schedule = Schedule::create([
+                'day' => $day,
+                'start' => Carbon::parse('08:00', 'Etc/UTC'),
+                'end' => Carbon::parse('16:00', 'Etc/UTC'),
+                'repeat_id' => $day == 'Saturday' ? $alternative_repeat->id : $repeat->id,
+            ]);
+
+            $schedule->breaks()->create([
+                'start' => Carbon::parse('12:00', 'Etc/UTC'),
+                'end' => Carbon::parse('12:45', 'Etc/UTC'),
+            ]);
+        }
     }
 }
