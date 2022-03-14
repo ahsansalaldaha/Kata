@@ -13,9 +13,9 @@ class ExclusiveBreak extends Model
     use DateTimeByDayAndTime;
     use HasFactory;
 
-    public function isWithinBreak(Carbon $time)
+    public function isWithinBreak(Carbon $datetime)
     {
-        return $time->isBetween($this->start, $this->end, true);
+        return $datetime->isBetween($this->getStartByDay($datetime), $this->getEndByDay($datetime), true);
     }
     public function getStartByDay(Carbon $day)
     {

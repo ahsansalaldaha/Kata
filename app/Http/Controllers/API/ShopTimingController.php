@@ -41,7 +41,7 @@ class ShopTimingController extends Controller
         }
         $data =  $next_open->diffForHumans();
         return response()->json([
-            'nearest_open' => $data
+            'nearest_open' => $data . ' at ' . $next_open->toDateTimeString(),
         ]);
     }
 }

@@ -30,7 +30,6 @@ class ShopTimingService implements CurrentAvailabilityInterface, AvailabilityInt
     public function isOpen(): bool
     {
         $current_time = Carbon::now()->utc();
-        info("Current Time:" . $current_time);
         return $this->isOpenOn($current_time);
     }
 
@@ -75,19 +74,13 @@ class ShopTimingService implements CurrentAvailabilityInterface, AvailabilityInt
                 }
             }
 
-            echo "After Break testing" . PHP_EOL;
-            echo ($current_time->toIso8601String()) . PHP_EOL;
-            echo ($todays_schedule->getEndByDay($current_time)->toIso8601String()) . PHP_EOL;
-
             if ($current_time->isAfter($todays_schedule->getEndByDay($current_time))) {
-                echo "shifted has ended";
                 $datetime = $this->getNextSchedule($current_time->addDay());
                 if ($datetime) {
                     return $datetime;
                 }
             }
 
-            echo "shifted has not ended";
             $datetime = $this->getNextSchedule($current_time);
             if ($datetime) {
                 return $datetime;
@@ -114,16 +107,12 @@ class ShopTimingService implements CurrentAvailabilityInterface, AvailabilityInt
             }
             $date = $date->addDay();
         }
-        echo PHP_EOL . $date . PHP_EOL;
 
         $date_utc = $date->copy()->startOfDay()->utc();
         if (!$schedule->isValidWeek($date_utc)) {
-            echo PHP_EOL . "not valid week";
             return $this->getNextSchedule($date->addDay());
         }
-        echo PHP_EOL . "Date to get Start of Day: " . $date . PHP_EOL;
         $start_of_shift =  $schedule->getStartByDay($date);
-        echo PHP_EOL . "start_of_shift: " . $start_of_shift . PHP_EOL;
         return $start_of_shift;
     }
 }

@@ -29,3 +29,4 @@ and visit
 -   Detailed backend testing - Unit Feature
 -   Vuex not incorporated
 -   Setting up separate databases for Prod and testing
+-   Timezone for schedule is in ETC/UTC so provide time accordingly

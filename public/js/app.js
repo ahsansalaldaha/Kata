@@ -10855,7 +10855,7 @@ __webpack_require__.r(__webpack_exports__);
 
 var ___CSS_LOADER_EXPORT___ = _node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_0___default()(function(i){return i[1]});
 // Module
-___CSS_LOADER_EXPORT___.push([module.id, "\n.badge-green[data-v-c1b17384] {\n    background-color: green;\n}\n.badge-red[data-v-c1b17384] {\n    background-color: red;\n}\n.badge-availability[data-v-c1b17384] {\n    font-size: 16px;\n}\n.p-0[data-v-c1b17384] {\n    padding: 0;\n}\n", ""]);
+___CSS_LOADER_EXPORT___.push([module.id, "\n.p-0[data-v-c1b17384] {\n    padding: 0;\n}\n", ""]);
 // Exports
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (___CSS_LOADER_EXPORT___);
 

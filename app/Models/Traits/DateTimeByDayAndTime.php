@@ -11,6 +11,6 @@ trait DateTimeByDayAndTime
 {
     private function getDateTimeByDateAndTime(Carbon $date, Carbon $time)
     {
-        return $date->setTime($time->hour, $time->minute, $time->second);
+        return $date->copy()->setTime($time->hour, $time->minute, $time->second);
     }
 }

@@ -29,13 +29,14 @@ class Schedule extends Model
         return $query->where('day', $day);
     }
 
-    public function isWithinSchedule(Carbon $time)
+    public function isWithinSchedule(Carbon $datetime)
     {
-        return $time->isBetween($this->start, $this->end, true);
+        return $datetime->isBetween($this->getStartByDay($datetime), $this->getEndByDay($datetime), true);
     }
 
-    public function isValidWeek(Carbon $datetime): bool
+    public function isValidWeek(Carbon $for): bool
     {
+        $datetime = $for->copy();
         if (!$datetime->isUtc()) {
             throw new Exception("Datetime must be in UTC format", 422);
         }
@@ -57,15 +58,17 @@ class Schedule extends Model
             return true;
         }
 
-        $start_day = $this->start_date->setTimezone('UTC')->startOfDay();
-
-        $weeks_count = 0;
-        while ($start_day->isBefore($datetime) || $start_day->equal($datetime)) {
-            if (++$weeks_count == $this->repeat->every || $weeks_count == 1) {
-                return true;
-            }
-            $start_day->addWeek();
+        if (!$this->start_date) {
+            return true;
         }
+
+        $start_day = Carbon::parse($this->start_date)->setTimezone('UTC')->startOfDay();
+
+        $weeks_count = $start_day->diffInWeeks($datetime);
+        if ($weeks_count == 0 || $weeks_count % $this->repeat->every == 0) {
+            return true;
+        }
+
         return false;
     }
 

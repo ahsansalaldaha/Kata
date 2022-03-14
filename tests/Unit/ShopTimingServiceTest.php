@@ -83,19 +83,19 @@ class ShopTimingServiceTest extends TestCase
         $this->assertInstanceOf(ShopTimingService::class, $timerService);
 
         // If shift is starting in few hours
-        // Carbon::setTestNow(Carbon::create(2022, 3, 14, 7, 59, 0));
-        // $nearest_open =  $timerService->nextAvailability();
-        // $this->assertEquals(Carbon::create(2022, 3, 14, 8, 0, 0), $nearest_open);
+        Carbon::setTestNow(Carbon::create(2022, 3, 14, 7, 59, 0));
+        $nearest_open =  $timerService->nextAvailability();
+        $this->assertEquals(Carbon::create(2022, 3, 14, 8, 0, 0), $nearest_open);
 
-        // // If its break time
-        // Carbon::setTestNow(Carbon::create(2022, 3, 14, 12, 40, 0));
-        // $nearest_open =  $timerService->nextAvailability();
-        // $this->assertEquals(Carbon::create(2022, 3, 14, 12, 45, 0), $nearest_open);
+        // If its break time
+        Carbon::setTestNow(Carbon::create(2022, 3, 14, 12, 40, 0));
+        $nearest_open =  $timerService->nextAvailability();
+        $this->assertEquals(Carbon::create(2022, 3, 14, 12, 45, 0), $nearest_open);
 
-        // // If shop is already open
-        // Carbon::setTestNow(Carbon::create(2022, 3, 14, 8, 0, 0));
-        // $nearest_open =  $timerService->nextAvailability();
-        // $this->assertNull($nearest_open);
+        // If shop is already open
+        Carbon::setTestNow(Carbon::create(2022, 3, 14, 8, 0, 0));
+        $nearest_open =  $timerService->nextAvailability();
+        $this->assertNull($nearest_open);
 
         // If shop will open next day
         Carbon::setTestNow(Carbon::create(2022, 3, 14, 17, 0, 0));
@@ -106,5 +106,10 @@ class ShopTimingServiceTest extends TestCase
         Carbon::setTestNow(Carbon::create(2022, 3, 25, 17, 0, 0));
         $nearest_open =  $timerService->nextAvailability();
         $this->assertEquals(Carbon::create(2022, 3, 28, 8, 0, 0), $nearest_open);
+
+        // If shop will today but its first saturday
+        Carbon::setTestNow(Carbon::create(2022, 3, 19, 6, 0, 0));
+        $nearest_open =  $timerService->nextAvailability();
+        $this->assertEquals(Carbon::create(2022, 3, 19, 8, 0, 0), $nearest_open);
     }
 }
