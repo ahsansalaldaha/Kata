@@ -21,3 +21,11 @@ php artisan db:seed
 
 and visit
 <a href="http://127.0.0.1">Localhost Link</a>
+
+## TODO/Skipped List
+
+-   Error validation on frontend
+-   Front end Testing using Chai, Mocha
+-   Detailed backend testing - Unit Feature
+-   Vuex not incorporated
+-   Setting up separate databases for Prod and testing

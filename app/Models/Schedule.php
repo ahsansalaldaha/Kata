@@ -6,10 +6,13 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Carbon;
 use Exception;
+use Illuminate\Database\Eloquent\Builder;
+use App\Models\Traits\DateTimeByDayAndTime;
 
 class Schedule extends Model
 {
     use HasFactory;
+    use DateTimeByDayAndTime;
 
     public function breaks()
     {
@@ -21,9 +24,9 @@ class Schedule extends Model
         return $this->belongsTo(Repeat::class);
     }
 
-    public function scopeDay($day)
+    public function scopeDay(Builder $query, string $day)
     {
-        return $this->where('day', $day);
+        return $query->where('day', $day);
     }
 
     public function isWithinSchedule(Carbon $time)
@@ -33,7 +36,7 @@ class Schedule extends Model
 
     public function isValidWeek(Carbon $datetime): bool
     {
-        if ($datetime->isUtc()) {
+        if (!$datetime->isUtc()) {
             throw new Exception("Datetime must be in UTC format", 422);
         }
         if (!$datetime->isStartOfDay()) {
@@ -64,5 +67,14 @@ class Schedule extends Model
             $start_day->addWeek();
         }
         return false;
+    }
+
+    public function getStartByDay(Carbon $day)
+    {
+        return $this->getDateTimeByDateAndTime($day, Carbon::parse($this->start));
+    }
+    public function getEndByDay(Carbon $day)
+    {
+        return $this->getDateTimeByDateAndTime($day, Carbon::parse($this->end));
     }
 }

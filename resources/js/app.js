@@ -24,8 +24,6 @@ window.Vue = require('vue').default;
 // const files = require.context('./', true, /\.vue$/i)
 // files.keys().map(key => Vue.component(key.split('/').pop().split('.')[0], files(key).default))
 
-Vue.component('shop-availability', require('./components/ShopAvailability.vue').default);
-
 /**
  * Next, we will create a fresh Vue application instance and attach it to
  * the page. Then, you may begin adding components to this application
@@ -35,6 +33,9 @@ Vue.component('shop-availability', require('./components/ShopAvailability.vue').
 
 Vue.use(VueRouter);
 Vue.use(VueAxios, axios);
+Vue.use(require('vue-moment'));
+
+import 'vue2-datepicker/index.css';
 
 const router = new VueRouter({
     mode: 'history',

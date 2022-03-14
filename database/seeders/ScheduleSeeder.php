@@ -29,6 +29,7 @@ class ScheduleSeeder extends Seeder
                 'day' => $day,
                 'start' => Carbon::parse('08:00', 'Etc/UTC'),
                 'end' => Carbon::parse('16:00', 'Etc/UTC'),
+                'start_date' => Carbon::parse('2022-03-14', 'Etc/UTC'),
                 'repeat_id' => $day == 'Saturday' ? $alternative_repeat->id : $repeat->id,
             ]);
 

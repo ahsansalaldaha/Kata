@@ -3,6 +3,7 @@
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\API\ScheduleController;
+use App\Http\Controllers\API\ShopTimingController;
 /*
 |--------------------------------------------------------------------------
 | API Routes
@@ -22,16 +23,16 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 Route::apiResource('schedule', ScheduleController::class);
 
 Route::get('/is-open-now', [
-    'uses' => 'API\ShopTimingController@isOpenNow',
-    'as' => 'isOpenNow'
+    ShopTimingController::class,
+    'isOpenNow',
 ]);
 
-Route::get('/is-open-on/{date}', [
-    'uses' => 'API\ShopTimingController@isOpenOn',
-    'as' => 'isOpenOn'
+Route::get('/is-open-on', [
+    ShopTimingController::class,
+    'isOpenOn',
 ]);
 
 Route::get('/nearest-open-date', [
-    'uses' => 'API\ShopTimingController@nearestOpenDate',
-    'as' => 'nearestOpenDate'
+    ShopTimingController::class,
+    'nearestOpenDate',
 ]);

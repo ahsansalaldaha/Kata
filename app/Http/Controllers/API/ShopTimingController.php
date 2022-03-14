@@ -7,13 +7,17 @@ use Illuminate\Http\Request;
 use App\Interfaces\CurrentAvailabilityInterface;
 use App\Interfaces\AvailabilityInterface;
 use App\Interfaces\NextAvailabilityInterface;
-use Carbon\Carbon;
+use Illuminate\Support\Carbon;
 
 class ShopTimingController extends Controller
 {
     public function isOpenNow(CurrentAvailabilityInterface $availability_calculator)
     {
-        return $availability_calculator->isOpen();
+        $data = $availability_calculator->isOpen();
+        return response()->json([
+            'is_open' => $data,
+            'datetime' => Carbon::now()
+        ]);
     }
 
     public function isOpenOn(Request $request, AvailabilityInterface $availability_calculator)
@@ -21,15 +25,23 @@ class ShopTimingController extends Controller
         $request->validate([
             'date' => 'required|date',
         ]);
-        return $availability_calculator->isOpenOn(Carbon::parse($request->input('date')));
+        $date = Carbon::parse($request->get('date'));
+        $data =  $availability_calculator->isOpenOn($date);
+        return response()->json([
+            'is_open' => $data,
+            'datetime' => $date
+        ]);
     }
 
     public function nearestOpenDate(NextAvailabilityInterface $availability_calculator)
     {
         $next_open =  $availability_calculator->nextAvailability();
         if (!$next_open) {
-            return response()->json(['message' => 'No open dates found'], 404);
+            return response()->json(['message' => 'No open dates found. Either open already or schedule not known'], 404);
         }
-        return $next_open->diffForHumans();
+        $data =  $next_open->diffForHumans();
+        return response()->json([
+            'nearest_open' => $data
+        ]);
     }
 }

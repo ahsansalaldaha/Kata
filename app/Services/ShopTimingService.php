@@ -8,26 +8,37 @@ use App\Interfaces\NextAvailabilityInterface;
 use App\Models\Repeat;
 use Illuminate\Support\Carbon;
 use App\Models\Schedule;
+use Illuminate\Support\Facades\Log;
 
 class ShopTimingService implements CurrentAvailabilityInterface, AvailabilityInterface, NextAvailabilityInterface
 {
 
-    private function getSchedule(Carbon $date): Schedule
+    private function getSchedule(Carbon $date): ?Schedule
     {
         return Schedule::day($date->format('l'))->with(['breaks', 'repeat'])->first();
+    }
+
+    private function getValidWeekSchedule(Carbon $date): ?Schedule
+    {
+        $schedule =  Schedule::day($date->format('l'))->with(['breaks', 'repeat'])->first();
+        if (!$schedule) {
+            return null;
+        }
+        return $schedule->isValidWeek($date->copy()->startOfDay()->utc()) ? $schedule : null;
     }
 
     public function isOpen(): bool
     {
         $current_time = Carbon::now()->utc();
+        info("Current Time:" . $current_time);
         return $this->isOpenOn($current_time);
     }
 
     public function isOpenOn(Carbon $date): bool
     {
-        $todays_schedule = $this->getSchedule($date);
+        $todays_schedule = $this->getValidWeekSchedule($date);
 
-        if (!$todays_schedule || !$todays_schedule->isValidWeek($date->copy()->startOfDay())) {
+        if (!$todays_schedule) {
             return false;
         }
 
@@ -49,9 +60,9 @@ class ShopTimingService implements CurrentAvailabilityInterface, AvailabilityInt
             $current_time = Carbon::now()->utc();
             $todays_schedule = $this->getSchedule($current_time);
 
-            if (!$todays_schedule || !$todays_schedule->isValidWeek($current_time->copy()->startOfDay())) {
-                if ($schedule = $this->getNextDaysSchedule($current_time)) {
-                    return $schedule->start;
+            if (!$todays_schedule) {
+                if ($datetime =  $this->getNextSchedule($current_time->addDay())) {
+                    return $datetime;
                 }
                 return null;
             }
@@ -59,38 +70,60 @@ class ShopTimingService implements CurrentAvailabilityInterface, AvailabilityInt
             if ($todays_schedule->isWithinSchedule($current_time)) {
                 foreach ($todays_schedule->breaks as $break) {
                     if ($break->isWithinBreak($current_time)) {
-                        return $break->end;
+                        return $break->getEndByDay($current_time);
                     }
                 }
             }
 
-            if ($schedule = $this->getNextDaysSchedule($current_time)) {
-                return $schedule->start;
+            echo "After Break testing" . PHP_EOL;
+            echo ($current_time->toIso8601String()) . PHP_EOL;
+            echo ($todays_schedule->getEndByDay($current_time)->toIso8601String()) . PHP_EOL;
+
+            if ($current_time->isAfter($todays_schedule->getEndByDay($current_time))) {
+                echo "shifted has ended";
+                $datetime = $this->getNextSchedule($current_time->addDay());
+                if ($datetime) {
+                    return $datetime;
+                }
             }
+
+            echo "shifted has not ended";
+            $datetime = $this->getNextSchedule($current_time);
+            if ($datetime) {
+                return $datetime;
+            }
+
             return null;
         }
+
         // Will return current meaning its open right now
-        return Carbon::now();
+        return null;
     }
 
-    private function getNextDaysSchedule(Carbon $today): Schedule
+    private function getNextSchedule(Carbon $for): ?Carbon
     {
-        $next_day = $today->addDay();
+        $date = $for->copy();
         $days_loop = 0;
 
         // Need to update if we shift to other types of repeat
         $max_repeat = Repeat::where('type', 'week')->max('every');
-        while (!($schedule = $this->getSchedule($next_day))) {
+        while (!($schedule = $this->getSchedule($date))) {
             // If we have looped through all the days adding repeat then maybe schedule is not set
             if (++$days_loop > (7 * $max_repeat)) {
                 return null;
             }
-            $next_day = $next_day->addDay();
+            $date = $date->addDay();
         }
+        echo PHP_EOL . $date . PHP_EOL;
 
-        if (!$schedule->isValidWeek($next_day)) {
-            return $this->getNextDaysSchedule($next_day->addDay());
+        $date_utc = $date->copy()->startOfDay()->utc();
+        if (!$schedule->isValidWeek($date_utc)) {
+            echo PHP_EOL . "not valid week";
+            return $this->getNextSchedule($date->addDay());
         }
-        return $schedule;
+        echo PHP_EOL . "Date to get Start of Day: " . $date . PHP_EOL;
+        $start_of_shift =  $schedule->getStartByDay($date);
+        echo PHP_EOL . "start_of_shift: " . $start_of_shift . PHP_EOL;
+        return $start_of_shift;
     }
 }

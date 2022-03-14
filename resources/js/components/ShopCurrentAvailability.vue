@@ -2,19 +2,15 @@
     <div class="container">
         <div class="row justify-content-center">
             <div class="card p-0">
-                <div class="card-header">Shop's Availability</div>
+                <div class="card-header">
+                    Shop's Current Availability
+                    <button
+                        class="btn btn-primary btn-outline btn-sm"
+                        @click="reload"
+                    >Reload</button>
+                </div>
                 <div class="card-body">
                     <table>
-                        <tr>
-                            <td>For Date:</td>
-                            <td>
-                                <date-picker
-                                    @change="getAvailability"
-                                    v-model="forDate"
-                                    type="datetime"
-                                ></date-picker>
-                            </td>
-                        </tr>
                         <tr>
                             <td>Shop is:</td>
                             <td>
@@ -32,13 +28,9 @@
 </template>
 
 <script>
-import DatePicker from 'vue2-datepicker';
-
 export default {
-    components: { DatePicker },
     data() {
         return {
-            forDate: new Date(),
             isOpen: false,
             datetime: null,
         }
@@ -47,19 +39,20 @@ export default {
         console.log('Component mounted.')
     },
     created() {
-        this.getAvailability();
+        this.reload();
     },
     methods: {
-        getAvailability() {
+        reload() {
             // Not handling field validation errors for now
             this.axios
-                .get('/api/is-open-on', { params: { 'date': this.forDate } })
+                .get('/api/is-open-now')
                 .then(({ data }) => {
                     this.isOpen = data.is_open;
                     this.datetime = this.$moment(data.datetime).local();
                 }).catch((err) => {
                     console.error(err)
                 });
+
         },
     },
 }
