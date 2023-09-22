@@ -9,6 +9,27 @@
 
 ## Kata Assignment
 
+Ali and Abdullah are shopkeepers in a little town in Pakistan. They would like to display a
+simple program that satisfies their requirements:
+
+- The opening days and hours of the shop need to be configured. The opening hours
+are spread throughout the week. Their store is open on Monday, Wednesday, and
+Friday from 08:00 till 06:00 hours, They are closed during lunchtime (12:00 - 14:45).
+- Every other week they are open on Saturdays as well.
+- Ali wants the website of their shop to display whether it is opened or closed at the
+moment.
+- Ali and Abdullah would love to add a datepicker so website visitors can check if the
+shop is opened on a selected day.
+Make use of OOP, write code SOLID, and VueJS/ReactJS, Apply the code standards, and
+aim for clean self-explanatory code.
+- A widget to see if the store is open or closed at the moment.
+- If closed, then display the nearest date when the ship is open.
+- A widget where a visitor can select a date and in return see if the shop is opened or
+not.
+- Bonus: if the store is closed show when it will open in a humanly readable format (eg.
+1 day from now instead of the date)
+
+
 To run the project run.
 
 ```
